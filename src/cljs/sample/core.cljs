@@ -12,7 +12,7 @@
   (:import goog.History))
 
 (defonce session (r/atom {:page :home}))
-
+(def app-state (r/atom [{:x 1 :y 2} {:x 2 :y 2} {:x 3 :y 3}]))
 (defn nav-link [uri title page]
   [:a.navbar-item
    {:href   uri
@@ -39,11 +39,17 @@
   [:section.section>div.container>div.content
    [:img {:src "/img/warning_clojure.png"}]])
 
+(defn add [item]
+  (let [x (:x item) y (:y item)]
+    [:li {:style {:list-style-type "circle"}} x " + " y " = " (+ x y)]
+    ))
 
 (defn home-page []
-  [:section.section>div.container>div.content
-   (when-let [docs (:docs @session)]
-     [:div {:dangerouslySetInnerHTML {:__html (md->html docs)}}])])
+  [:div {:style {:padding "15px"}}
+   [:h1 "Addition"]
+   [:ul
+    (for [item @app-state]
+      (add item))]])
 
 (def pages
   {:home #'home-page
