@@ -40,8 +40,8 @@
    [:img {:src "/img/warning_clojure.png"}]])
 
 (defn list-item [item]
-  (let [x (:x item) y (:y item) total (:total item)]
-    [:li {:style {:list-style-type "circle"}} x " + " y " = " total]
+  (let [x (:x item) y (:y item) operation (:op item) total (:total item)]
+    [:li {:style {:list-style-type "circle"}} x  " " operation " " y " = " total]
     ))
 
 
@@ -50,15 +50,22 @@
            :value (key @value)
            :on-change #(swap! value assoc key (js/parseInt (-> % .-target .-value)))}])
 
-(defn update-state [form-data]
-  (GET "/api/math/plus" {:params {:x (:x @form-data) :y (:y @form-data)} :handler #(swap! app-state conj (conj @form-data %))}) )
+(def operation-mapping
+  {"+" "plus" "-" "minus" "*" "mult" "/" "div"})
+
+
+(defn update-state [form-data op]
+  (GET (str "/api/math/" (operation-mapping op)) {:params {:x (:x @form-data) :y (:y @form-data)} :handler #(swap! app-state conj (conj @form-data % {:op op}))}) )
 (defn home-page []
   (let [form-data (r/atom {})]
     (fn []
       [:div {:style {:padding "15px"}}
        [input-field :x form-data]
        [input-field :y form-data]
-       [:button {:on-click #(update-state form-data)} "+" ]
+       [:button {:on-click #(update-state form-data "+" )} "+" ]
+       [:button {:on-click #(update-state form-data "-") } "-" ]
+       [:button {:on-click #(update-state form-data "*") } "*" ]
+       [:button {:on-click #(update-state form-data "/") } "/" ]
        [:ul
         (for [item @app-state]
           [list-item item])]]
