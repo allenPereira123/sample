@@ -56,13 +56,13 @@
     ["/plus"
      {:get {:summary "plus with spec query parameters"
             :parameters {:query {:x int?, :y int?}}
-            :responses {200 {:body {:total pos-int?}}}
+            :responses {200 {:body {:total int?}}}
             :handler (fn [{{{:keys [x y]} :query} :parameters}]
                        {:status 200
                         :body {:total (+ x y)}})}
       :post {:summary "plus with spec body parameters"
              :parameters {:body {:x int?, :y int?}}
-             :responses {200 {:body {:total pos-int?}}}
+             :responses {200 {:body {:total int?}}}
              :handler (fn [{{{:keys [x y]} :body} :parameters}]
                         {:status 200
                          :body {:total (+ x y)}})}}]
@@ -70,26 +70,26 @@
     ["/minus"
      {:get {:summary "minus with spec query parameters"
             :parameters {:query {:x int?, :y int?}}
-            :responses {200 {:body {:total pos-int?}}}
+            :responses {200 {:body {:total int?}}}
             :handler (fn [{{{:keys [x y]} :query} :parameters}]
                        {:status 200
                         :body {:total (- x y)}})}
-      :post {:summary "plus with spec body parameters"
+      :post {:summary "minus with spec body parameters"
              :parameters {:body {:x int?, :y int?}}
-             :responses {200 {:body {:total pos-int?}}}
+             :responses {200 {:body {:total int?}}}
              :handler (fn [{{{:keys [x y]} :body} :parameters}]
                         {:status 200
                          :body {:total (- x y)}})}}]
     ["/mult"
      {:get {:summary "mult with spec query parameters"
             :parameters {:query {:x int?, :y int?}}
-            :responses {200 {:body {:total pos-int?}}}
+            :responses {200 {:body {:total int?}}}
             :handler (fn [{{{:keys [x y]} :query} :parameters}]
                        {:status 200
                         :body {:total (* x y)}})}
-      :post {:summary "plus with spec body parameters"
+      :post {:summary "mult with spec body parameters"
              :parameters {:body {:x int?, :y int?}}
-             :responses {200 {:body {:total pos-int?}}}
+             :responses {200 {:body {:total int?}}}
              :handler (fn [{{{:keys [x y]} :body} :parameters}]
                         {:status 200
                          :body {:total (* x y)}})}}]
