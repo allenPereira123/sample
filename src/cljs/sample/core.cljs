@@ -12,7 +12,7 @@
   (:import goog.History))
 
 (defonce session (r/atom {:page :home}))
-(def app-state (r/atom [{:x 1 :y 2} {:x 2 :y 2} {:x 3 :y 3}]))
+(defonce app-state (r/atom [{}]))
 (defn nav-link [uri title page]
   [:a.navbar-item
    {:href   uri
@@ -40,16 +40,29 @@
    [:img {:src "/img/warning_clojure.png"}]])
 
 (defn add [item]
-  (let [x (:x item) y (:y item)]
+  (let [x (:x item) y (:y item) sum (:sum item)]
     [:li {:style {:list-style-type "circle"}} x " + " y " = " (+ x y)]
     ))
 
+
+(defn input-field [key value]
+  [:input {:type "number"
+           :value (key @value)
+           :on-change #(swap! value assoc key (js/parseInt (-> % .-target .-value)))}])
+
+(defn update-state [form-data sum]
+  (swap! app-state conj (conj @form-data {:sum sum}) ))
 (defn home-page []
-  [:div {:style {:padding "15px"}}
-   [:h1 "Addition"]
-   [:ul
-    (for [item @app-state]
-      (add item))]])
+  (let [form-data (r/atom {})]
+    (fn []
+      [:div {:style {:padding "15px"}}
+       [input-field :x form-data]
+       [input-field :y form-data]
+       [:button {:on-click #(update-state form-data (+ (:x @form-data) (:y @form-data)))} "+" ]
+       [:ul
+        (for [item @app-state]
+          [add item])]]
+      )))
 
 (def pages
   {:home #'home-page
