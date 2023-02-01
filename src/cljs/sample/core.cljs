@@ -39,9 +39,9 @@
   [:section.section>div.container>div.content
    [:img {:src "/img/warning_clojure.png"}]])
 
-(defn add [item]
-  (let [x (:x item) y (:y item) sum (:sum item)]
-    [:li {:style {:list-style-type "circle"}} x " + " y " = " (+ x y)]
+(defn list-item [item]
+  (let [x (:x item) y (:y item) total (:total item)]
+    [:li {:style {:list-style-type "circle"}} x " + " y " = " total]
     ))
 
 
@@ -50,18 +50,19 @@
            :value (key @value)
            :on-change #(swap! value assoc key (js/parseInt (-> % .-target .-value)))}])
 
-(defn update-state [form-data sum]
-  (swap! app-state conj (conj @form-data {:sum sum}) ))
+(defn update-state [form-data]
+  (GET "/api/math/plus" {:params {:x (:x @form-data) :y (:y @form-data)} :handler #(swap! app-state conj (conj @form-data %))}) )
 (defn home-page []
   (let [form-data (r/atom {})]
     (fn []
       [:div {:style {:padding "15px"}}
        [input-field :x form-data]
        [input-field :y form-data]
-       [:button {:on-click #(update-state form-data (+ (:x @form-data) (:y @form-data)))} "+" ]
+       [:button {:on-click #(update-state form-data)} "+" ]
        [:ul
         (for [item @app-state]
-          [add item])]]
+          [list-item item])]]
+
       )))
 
 (def pages
