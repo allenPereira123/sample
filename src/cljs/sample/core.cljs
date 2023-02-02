@@ -12,7 +12,8 @@
   (:import goog.History))
 
 (defonce session (r/atom {:page :home}))
-(defonce app-state (r/atom [{}]))
+(defonce app-state (r/atom []))
+
 (defn nav-link [uri title page]
   [:a.navbar-item
    {:href   uri
@@ -45,14 +46,14 @@
     ))
 
 
-(defn input-field [key value]
+(defn input-field [key form-data]
   [:div
    [:h1 "Operand"]
    [:input.input.is-primary
     {:style {:margin-bottom "15px"}
      :type "number"
-     :value (key @value)
-     :on-change #(swap! value assoc key (js/parseInt (-> % .-target .-value)))}]
+     :value (key @form-data)
+     :on-change #(swap! form-data assoc key (js/parseInt (-> % .-target .-value)))}]
    ])
 
 
@@ -61,7 +62,9 @@
 
 
 (defn update-state [form-data op]
-  (GET (str "/api/math/" (operation-mapping op)) {:params {:x (:x @form-data) :y (:y @form-data)} :handler #(swap! app-state conj (conj @form-data % {:op op}))}) )
+  (GET (str "/api/math/" (operation-mapping op))
+       {:params {:x (:x @form-data) :y (:y @form-data)}
+        :handler #(swap! app-state conj (conj @form-data % {:op op}))}) )
 
 (defn buttons [form-data]
   [:div {:style {:display "flex" :flex-direction "column" :justify-content "space-between"}}
@@ -76,8 +79,9 @@
   [:div {:style {:margin-top "10px"}} "Equations"
    [:ul {:style {:margin-left "15px"}}
     (for [item @app-state]
-      (when (not (empty? item))
-        [list-item item]))]])
+      [list-item item])]])
+
+
 
 (defn home-page []
   (let [form-data (r/atom {})]
