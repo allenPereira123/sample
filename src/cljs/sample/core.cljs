@@ -41,14 +41,20 @@
 
 (defn list-item [item]
   (let [x (:x item) y (:y item) operation (:op item) total (:total item)]
-    [:li {:style {:list-style-type "circle"}} x  " " operation " " y " = " total]
+    [:li {:style {:list-style-type "circle"}} x  " " operation " " y " = " (str total)]
     ))
 
 
 (defn input-field [key value]
-  [:input {:type "number"
-           :value (key @value)
-           :on-change #(swap! value assoc key (js/parseInt (-> % .-target .-value)))}])
+  [:div
+   [:h1 "Operand"]
+   [:input.input.is-primary
+    {:style {:margin-bottom "15px"}
+     :type "number"
+     :value (key @value)
+     :on-change #(swap! value assoc key (js/parseInt (-> % .-target .-value)))}]
+   ])
+
 
 (def operation-mapping
   {"+" "plus" "-" "minus" "*" "mult" "/" "div"})
@@ -56,19 +62,33 @@
 
 (defn update-state [form-data op]
   (GET (str "/api/math/" (operation-mapping op)) {:params {:x (:x @form-data) :y (:y @form-data)} :handler #(swap! app-state conj (conj @form-data % {:op op}))}) )
+
+(defn buttons [form-data]
+  [:div {:style {:display "flex" :flex-direction "column" :justify-content "space-between"}}
+   [:h1 "Operators"]
+   [:div {:style {:display "flex" :justify-content "space-between"}}
+    [:button.button.is-primary {:on-click #(update-state form-data "+" )} "+" ]
+    [:button.button.is-primary {:on-click #(update-state form-data "-") } "-" ]
+    [:button.button.is-primary {:on-click #(update-state form-data "*") } "*" ]
+    [:button.button.is-primary {:on-click #(update-state form-data "/") } "/" ]
+    ]
+   ]
+  )
+
+(defn equation-list []
+  [:ul {:style {:margin-left "15px"}}
+   (for [item @app-state]
+     [list-item item])]
+  )
+
 (defn home-page []
   (let [form-data (r/atom {})]
     (fn []
-      [:div {:style {:padding "15px"}}
+      [:div {:style {:margin "50px" :width "250px" :display "flex" :flex-direction "column"}}
        [input-field :x form-data]
        [input-field :y form-data]
-       [:button {:on-click #(update-state form-data "+" )} "+" ]
-       [:button {:on-click #(update-state form-data "-") } "-" ]
-       [:button {:on-click #(update-state form-data "*") } "*" ]
-       [:button {:on-click #(update-state form-data "/") } "/" ]
-       [:ul
-        (for [item @app-state]
-          [list-item item])]]
+       [buttons form-data]
+       [equation-list]]
 
       )))
 

@@ -94,7 +94,19 @@
                         {:status 200
                          :body {:total (* x y)}})}}]
 
-
+    ["/div"
+     {:get {:summary "div with spec query parameters"
+            :parameters {:query {:x int?, :y int?}}
+            :responses {200 {:body {}}}
+            :handler (fn [{{{:keys [x y]} :query} :parameters}]
+                       {:status 200
+                        :body {:total (float (/ x y))}})}
+      :post {:summary "div with spec body parameters"
+             :parameters {:body {:x int?, :y int?}}
+             :responses {200 {:body {}}}
+             :handler (fn [{{{:keys [x y]} :body} :parameters}]
+                        {:status 200
+                         :body {:total (/ x y)}})}}]
 
 
     ]
