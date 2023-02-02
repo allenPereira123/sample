@@ -70,16 +70,14 @@
     [:button.button.is-primary {:on-click #(update-state form-data "+" )} "+" ]
     [:button.button.is-primary {:on-click #(update-state form-data "-") } "-" ]
     [:button.button.is-primary {:on-click #(update-state form-data "*") } "*" ]
-    [:button.button.is-primary {:on-click #(update-state form-data "/") } "/" ]
-    ]
-   ]
-  )
+    [:button.button.is-primary {:on-click #(update-state form-data "/") } "/" ]]])
 
 (defn equation-list []
-  [:ul {:style {:margin-left "15px"}}
-   (for [item @app-state]
-     [list-item item])]
-  )
+  [:div {:style {:margin-top "10px"}} "Equations"
+   [:ul {:style {:margin-left "15px"}}
+    (for [item @app-state]
+      (when (not (empty? item))
+        [list-item item]))]])
 
 (defn home-page []
   (let [form-data (r/atom {})]
@@ -88,9 +86,7 @@
        [input-field :x form-data]
        [input-field :y form-data]
        [buttons form-data]
-       [equation-list]]
-
-      )))
+       [equation-list]])))
 
 (def pages
   {:home #'home-page
