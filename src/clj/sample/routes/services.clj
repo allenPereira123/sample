@@ -97,7 +97,7 @@
     ["/div"
      {:get {:summary "div with spec query parameters"
             :parameters {:query {:x int?, :y int?}}
-            :responses {200 {:body {}}}
+            :responses {200 {:body {:total float?}}}
             :handler (fn [{{{:keys [x y]} :query} :parameters}]
                        {:status 200
                         :body {:total (float (/ x y))}})}
