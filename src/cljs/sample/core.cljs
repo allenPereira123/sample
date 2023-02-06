@@ -54,14 +54,14 @@
 
 
 (defn input-field [key form-data]
-  [:div
-   [:h1 "Operand"]
-   [:input.input.is-primary
-    {:style {:margin-bottom "15px"}
-     :type "number"
-     :value (key @form-data)
-     :on-change #(swap! form-data assoc key (js/parseInt (-> % .-target .-value)))}]
-   ])
+  [:div.field
+   [:label.label "Operand"]
+   [:div.control
+    [:input.input.is-primary
+     {:style {:margin-bottom "15px"}
+      :type "number"
+      :value (key @form-data)
+      :on-change #(swap! form-data assoc key (js/parseInt (-> % .-target .-value)))}]]])
 
 
 (def operation-mapping
@@ -74,16 +74,18 @@
         :handler #(swap! app-state conj (conj @form-data % {:op op}))}) )
 
 (defn buttons [form-data]
-  [:div {:style {:display "flex" :flex-direction "column" :justify-content "space-between"}}
-   [:h1 "Operators"]
-   [:div {:style {:display "flex" :justify-content "space-between"}}
+  [:div
+   [:label.label "Operators"]
+   [:div.buttons
     [:button.button.is-primary {:on-click #(update-state form-data "+" )} "+" ]
-    [:button.button.is-primary {:on-click #(update-state form-data "-") } "-" ]
-    [:button.button.is-primary {:on-click #(update-state form-data "*") } "*" ]
-    [:button.button.is-primary {:on-click #(update-state form-data "/") } "/" ]]])
+    [:button.button.is-primary {:on-click #(update-state form-data "-" )} "-" ]
+    [:button.button.is-primary {:on-click #(update-state form-data "*" )} "*" ]
+    [:button.button.is-primary {:on-click #(update-state form-data "/" )} "/" ]
+    ]])
 
 (defn equation-list []
-  [:div {:style {:margin-top "10px"}} "Equations"
+  [:div {:style {:margin-top "10px"}}
+   [:label.label "Equations"]
    [:ul {:style {:margin-left "15px"}}
     (for [item @app-state]
       [list-item item])]])
@@ -93,11 +95,13 @@
 (defn home-page []
   (let [form-data (r/atom {})]
     (fn []
-      [:div {:style {:margin "50px" :width "250px" :display "flex" :flex-direction "column"}}
-       [input-field :x form-data]
-       [input-field :y form-data]
-       [buttons form-data]
-       [equation-list]])))
+      [:div {:style {:margin "50px" :width "350px"}}
+       [:div.box
+        [input-field :x form-data]
+        [input-field :y form-data]
+        [buttons form-data]
+        [equation-list]]
+       ])))
 
 (def pages
   {:home #'home-page
