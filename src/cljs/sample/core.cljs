@@ -40,10 +40,17 @@
   [:section.section>div.container>div.content
    [:img {:src "/img/warning_clojure.png"}]])
 
+(defn setColor [total]
+  (if (<= total 19) "#90EE90"
+                    (if (<= total 49) "#ADD8E6" "#FFA07A")))
 (defn list-item [item]
   (let [x (:x item) y (:y item) operation (:op item) total (:total item)]
-    [:li {:style {:list-style-type "circle"}} x  " " operation " " y " = " (str total)]
+    [:li {:style {:list-style-type "circle" :color (setColor total)}} x  " " operation " " y " = " (str total)]
     ))
+
+
+(comment (setColor 55))
+
 
 
 (defn input-field [key form-data]
