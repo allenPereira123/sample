@@ -13,6 +13,7 @@
 
 (defonce session (r/atom {:page :home}))
 (defonce app-state (r/atom []))
+(defonce buttons (r/atom [["+" "plus"] ["-" "minus"] ["*" "mult"] ["/" "div"]]))
 
 (defn nav-link [uri title page]
   [:a.navbar-item
@@ -41,8 +42,8 @@
    [:img {:src "/img/warning_clojure.png"}]])
 
 (defn setColor [total]
-  (if (<= total 19) "#90EE90"
-                    (if (<= total 49) "#ADD8E6" "#FFA07A")))
+  (if (< total 0 ) "#FF0000"
+    (if (<= total 19) "#90EE90" (if (<= total 49) "#ADD8E6" "#FFA07A"))))
 (defn list-item [item]
   (let [x (:x item) y (:y item) operation (:op item) total (:total item)]
     [:li {:style {:list-style-type "circle" :color (setColor total)}} x  " " operation " " y " = " (str total)]
@@ -64,23 +65,21 @@
       :on-change #(swap! form-data assoc key (js/parseInt (-> % .-target .-value)))}]]])
 
 
-(def operation-mapping
-  {"+" "plus" "-" "minus" "*" "mult" "/" "div"})
-
-
-(defn update-state [form-data op]
-  (GET (str "/api/math/" (operation-mapping op))
+(defn update-state [form-data operator]
+  (GET (str "/api/math/" (second operator))
        {:params {:x (:x @form-data) :y (:y @form-data)}
-        :handler #(swap! app-state conj (conj @form-data % {:op op}))}) )
+        :handler #(swap! app-state conj (conj @form-data % {:op (first operator)}))}) )
 
-(defn buttons [form-data]
+
+(defn button [form-data operator]
+  [:button.button.is-primary {:on-click #(update-state form-data operator)} (first operator) ]
+  )
+(defn operations [form-data]
   [:div
    [:label.label "Operators"]
    [:div.buttons
-    [:button.button.is-primary {:on-click #(update-state form-data "+" )} "+" ]
-    [:button.button.is-primary {:on-click #(update-state form-data "-" )} "-" ]
-    [:button.button.is-primary {:on-click #(update-state form-data "*" )} "*" ]
-    [:button.button.is-primary {:on-click #(update-state form-data "/" )} "/" ]
+    (for [operator @buttons]
+      [button form-data operator])
     ]])
 
 (defn equation-list []
@@ -99,7 +98,7 @@
        [:div.box
         [input-field :x form-data]
         [input-field :y form-data]
-        [buttons form-data]
+        [operations form-data]
         [equation-list]]
        ])))
 
