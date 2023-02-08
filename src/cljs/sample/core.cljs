@@ -79,7 +79,7 @@
    [:label.label "Operators"]
    [:div.buttons
     (for [operator @buttons]
-      [button form-data operator])
+      ^{:key operator}[button form-data operator])
     ]])
 
 (defn equation-list []
